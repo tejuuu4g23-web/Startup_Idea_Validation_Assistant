@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fc">
+  <meta name="description" content="A practical, explainable startup idea validation assistant.">
+  <title>{% block title %}Dashboard{% endblock %} · VentureLens</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+</head>
+<body>
+  <div class="mobile-topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">V</span><span>Venture<span class="brand-light">Lens</span></span></a>
+    <button class="icon-button mobile-menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-menu-toggle>☰</button>
+  </div>
+  <div class="app-shell">
+    <aside class="sidebar" data-sidebar>
+      <a class="brand brand-desktop" href="{{ url_for('dashboard') }}">
+        <span class="brand-mark">V</span><span>Venture<span class="brand-light">Lens</span></span>
+      </a>
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">▦</span>Dashboard</a>
+        <a class="nav-link {% if request.endpoint == 'validate' %}active{% endif %}" href="{{ url_for('validate') }}"><span class="nav-icon">✳</span>Validate idea</a>
+        <a class="nav-link {% if request.endpoint in ['reports', 'report_detail'] %}active{% endif %}" href="{{ url_for('reports') }}"><span class="nav-icon">▤</span>Saved reports</a>
+        <a class="nav-link {% if request.endpoint == 'about' %}active{% endif %}" href="{{ url_for('about') }}"><span class="nav-icon">ⓘ</span>About project</a>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-note">
+        <div class="sidebar-note-icon">✦</div>
+        <strong>Build with evidence.</strong>
+        <p>Use small experiments to test assumptions before making big commitments.</p>
+        <a href="{{ url_for('about') }}">How scoring works <span>↗</span></a>
+      </div>
+      <div class="sidebar-footer"><span class="status-dot"></span> Local assessment engine</div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><span class="crumb-separator">/</span><strong>{% block breadcrumb %}Dashboard{% endblock %}</strong></div>
+        <div class="topbar-actions">
+          <span class="local-badge"><span class="status-dot"></span> PRIVATE WORKSPACE</span>
+          <div class="avatar" title="Startup workspace">VL</div>
+        </div>
+      </header>
+      <div class="page-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-stack" aria-live="polite">
+              {% for category, message in messages %}<div class="flash flash-{{ category }}"><span>{% if category == 'success' %}✓{% else %}!{% endif %}</span>{{ message }}<button type="button" class="flash-close" aria-label="Dismiss message" data-dismiss>×</button></div>{% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        <footer class="page-footer"><span>VentureLens · Startup Idea Validation Assistant</span><span>Preliminary guidance, not a guarantee of business success.</span></footer>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

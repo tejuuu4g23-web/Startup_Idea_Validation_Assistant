@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Validate an Idea{% endblock %}
+{% block breadcrumb %}Validate idea{% endblock %}
+{% block content %}
+<section class="page-intro">
+  <div class="eyebrow"><span>NEW ASSESSMENT</span><i></i><span>ABOUT 5–8 MINUTES</span></div>
+  <h1>Let's pressure-test your <span class="text-accent">startup idea.</span></h1>
+  <p class="hero-subtitle">Share what you know today. Be honest about assumptions — the report will highlight what to test next.</p>
+</section>
+{% if form_errors %}<div class="validation-errors"><strong>Please review the following:</strong><ul>{% for error in form_errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+<form method="post" action="{{ url_for('validate') }}" class="idea-form" data-idea-form>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <section class="form-section">
+    <div class="form-section-heading"><span class="section-number">01</span><div><h2>The idea</h2><p>Describe the idea and the person it is meant to help.</p></div></div>
+    <div class="form-grid two-col">
+      <div class="field"><label for="idea_name">Startup idea name <span class="required">*</span></label><input id="idea_name" name="idea_name" maxlength="120" required placeholder="e.g. LocalFarm Connect" value="{{ form_data.get('idea_name', '') }}"><small>Choose a short working name.</small></div>
+      <div class="field"><label for="industry">Industry / sector <span class="required">*</span></label><select id="industry" name="industry" required><option value="">Choose an industry</option>{% for option in ['Agriculture','Education','Healthcare','E-commerce / Retail','Finance','Food & Beverage','SaaS / Software','Environment / Sustainability','Travel & Hospitality','Logistics','Home Services','Other'] %}<option value="{{ option }}" {% if form_data.get('industry') == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select></div>
+      <div class="field full-width"><label for="description">Short idea description <span class="required">*</span></label><textarea id="description" name="description" rows="3" maxlength="1500" required placeholder="What are you proposing to build or offer?" data-count>{{ form_data.get('description', '') }}</textarea><div class="field-meta"><small>Write 2–4 clear sentences.</small><small><span data-count-value>{{ form_data.get('description', '')|length }}</span>/1500</small></div></div>
+      <div class="field"><label for="problem">Problem being solved <span class="required">*</span></label><textarea id="problem" name="problem" rows="3" maxlength="3000" required placeholder="What problem do customers face?">{{ form_data.get('problem', '') }}</textarea></div>
+      <div class="field"><label for="solution">Proposed solution <span class="required">*</span></label><textarea id="solution" name="solution" rows="3" maxlength="3000" required placeholder="How will your idea solve the problem?">{{ form_data.get('solution', '') }}</textarea></div>
+      <div class="field"><label for="target_customers">Target customers <span class="required">*</span></label><textarea id="target_customers" name="target_customers" rows="2" maxlength="3000" required placeholder="Who is most likely to use or pay for this?">{{ form_data.get('target_customers', '') }}</textarea></div>
+      <div class="field"><label for="geographic_market">Initial geographic market <span class="required">*</span></label><input id="geographic_market" name="geographic_market" maxlength="3000" required placeholder="e.g. Kolhapur, Maharashtra or online in India" value="{{ form_data.get('geographic_market', '') }}"></div>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="form-section-heading"><span class="section-number">02</span><div><h2>Business model</h2><p>How will customers recognise the value and how could the business earn revenue?</p></div></div>
+    <div class="form-grid two-col">
+      <div class="field full-width"><label for="uvp">Unique value proposition <span class="required">*</span></label><textarea id="uvp" name="uvp" rows="2" maxlength="3000" required placeholder="Why might a customer choose this over their current alternative?">{{ form_data.get('uvp', '') }}</textarea></div>
+      <div class="field"><label for="competitors">Competitors or alternatives</label><textarea id="competitors" name="competitors" rows="3" maxlength="3000" placeholder="Known products, manual workarounds, or write 'not researched yet'">{{ form_data.get('competitors', '') }}</textarea><small>Do not worry if this is incomplete; the report will flag it.</small></div>
+      <div class="field"><label for="revenue_model">Proposed revenue model <span class="required">*</span></label><select id="revenue_model" name="revenue_model" required><option value="">Choose a model</option>{% for option in ['Subscription','One-time purchase','Commission / marketplace fee','Freemium with paid upgrade','Service fee','Advertising','Licensing','Not decided yet','Other'] %}<option value="{{ option }}" {% if form_data.get('revenue_model') == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select><small>It's okay to choose “Not decided yet”.</small></div>
+      <div class="field"><label for="initial_budget">Estimated initial budget (₹)</label><div class="input-prefix"><span>₹</span><input id="initial_budget" name="initial_budget" type="number" min="0" max="1000000000000" step="0.01" value="{{ form_data.get('initial_budget', '0') }}"></div><small>Enter 0 if no budget has been set.</small></div>
+      <div class="field"><label for="skills_resources">Available skills and resources <span class="required">*</span></label><textarea id="skills_resources" name="skills_resources" rows="3" maxlength="3000" required placeholder="Team skills, time available, tools, partners, or constraints">{{ form_data.get('skills_resources', '') }}</textarea></div>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="form-section-heading"><span class="section-number">03</span><div><h2>Evidence so far</h2><p>Tell us what you have actually checked — not what you hope will be true.</p></div></div>
+    <div class="form-grid two-col">
+      {% set evidence_options = [('yes','Yes'),('no','No'),('unknown','Not sure yet')] %}
+      <div class="field"><label for="has_customer_interviews">Have you spoken to potential customers?</label><select name="has_customer_interviews" id="has_customer_interviews">{% for value,label in evidence_options %}<option value="{{ value }}" {% if form_data.get('has_customer_interviews','unknown') == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="customer_interviews">Number of interviews / survey responses</label><input type="number" name="customer_interviews" id="customer_interviews" min="0" max="1000000" step="1" value="{{ form_data.get('customer_interviews','0') }}"><small>Use 0 if none have been completed.</small></div>
+      <div class="field"><label for="problem_evidence">Evidence that customers experience the problem?</label><select name="problem_evidence" id="problem_evidence">{% for value,label in evidence_options %}<option value="{{ value }}" {% if form_data.get('problem_evidence','unknown') == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="willingness_to_pay">Evidence customers may be willing to pay?</label><select name="willingness_to_pay" id="willingness_to_pay">{% for value,label in evidence_options %}<option value="{{ value }}" {% if form_data.get('willingness_to_pay','unknown') == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="prototype_tested">Has a prototype or MVP been tested?</label><select name="prototype_tested" id="prototype_tested">{% for value,label in evidence_options %}<option value="{{ value }}" {% if form_data.get('prototype_tested','unknown') == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="demand_evidence">Notes or evidence supporting demand</label><textarea name="demand_evidence" id="demand_evidence" rows="3" maxlength="3000" placeholder="Interview notes, observed behaviour, pilot results, or assumptions to test">{{ form_data.get('demand_evidence', '') }}</textarea></div>
+    </div>
+  </section>
+
+  <section class="form-section ratings-section">
+    <div class="form-section-heading"><span class="section-number">04</span><div><h2>Rate the key assumptions</h2><p>Rate each factor honestly from 1 (very weak / unknown) to 5 (strong, supported by evidence).</p></div></div>
+    <div class="rating-legend"><span><b class="rating-low">1</b> Weak / unknown</span><span><b class="rating-mid">3</b> Some support</span><span><b class="rating-high">5</b> Strong evidence</span></div>
+    <div class="ratings-grid">
+      {% for key, label in factor_labels.items() %}
+      <div class="rating-card">
+        <div class="rating-card-top"><label for="rating_{{ key }}">{{ label }} <span class="required">*</span></label><span class="weight-pill">Weight {{ weights[key] }}%</span></div>
+        <p>{{ factor_help[key] }}</p>
+        <div class="rating-select-wrap"><select id="rating_{{ key }}" name="{{ key }}" required aria-label="Rate {{ label }}"><option value="">Choose 1–5</option>{% for score in range(1,6) %}<option value="{{ score }}" {% if form_data.get('ratings', {}).get(key, '')|string == score|string %}selected{% endif %}>{{ score }} — {% if score == 1 %}Very weak{% elif score == 2 %}Weak{% elif score == 3 %}Moderate{% elif score == 4 %}Strong{% else %}Very strong{% endif %}</option>{% endfor %}</select></div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="form-submit-row"><div class="form-disclaimer"><span>ⓘ</span><p>Be realistic. This assessment is based on your inputs and should guide validation experiments, not replace them.</p></div><button type="submit" class="button button-primary button-large" data-submit-button><span>✳</span> Evaluate my idea <span>→</span></button></div>
+</form>
+{% endblock %}

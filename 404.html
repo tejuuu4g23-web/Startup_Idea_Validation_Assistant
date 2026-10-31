@@ -1,0 +1,4 @@
+{% extends 'base.html' %}
+{% block title %}Page not found{% endblock %}
+{% block breadcrumb %}Not found{% endblock %}
+{% block content %}<section class="panel big-empty-state"><div class="empty-report-icon">?</div><h2>This page isn't here</h2><p>The report may have been deleted, or the address may be incorrect.</p><a class="button button-primary" href="{{ url_for('dashboard') }}">Back to dashboard <span>→</span></a></section>{% endblock %}
